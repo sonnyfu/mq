@@ -20,8 +20,9 @@ public class QueueProducer {
    
     public static final String PASSWORD = ActiveMQConnection.DEFAULT_PASSWORD;
     /** 默认连接地址（格式如：tcp://IP:61616） */
-    //虚拟机192.168.1.103:failover:(tcp://192.168.1.103:61616,tcp://192.168.0.103:61617,tcp://192.168.0.103:61618)
-    public static final String BROKER_URL = "tcp://192.168.1.103:61616";
+    //failover机制:(tcp://192.168.0.103:61616,tcp://192.168.0.103:61617,tcp://192.168.0.103:61618)
+    //static network 192.168.1.104uni-channel到103机器
+    public static final String BROKER_URL = "tcp://192.168.1.104:61616";
     /** 队列名称 */
     public static final String QUEUE_NAME = "hello amq";
 
@@ -62,7 +63,7 @@ public class QueueProducer {
              * 会话对象就会确认消息的接收(即接收端发生异常ok或不调用message.
              * acknowledge()ok)，而且允许重复确认。
              */
-            session = connection.createSession(false, Session.DUPS_OK_ACKNOWLEDGE);
+            session = connection.createSession(true, Session.DUPS_OK_ACKNOWLEDGE);
 
             destination = session.createQueue(QUEUE_NAME);
             messageProducer = session.createProducer(destination);
@@ -84,7 +85,7 @@ public class QueueProducer {
             /**
              * commit之前只是写到broker的日历里面，commit之后才persist
              */
-            //session.commit();
+            session.commit();
             //session.rollback();
             messageProducer.close();
         } catch (Exception e) {
